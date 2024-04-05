@@ -27,8 +27,8 @@ def search_scholar(query, year_filter=None, author_filter=None, journal_filter=N
 st.title('Research Assistant for Literature Search and Management')
 
 if st.sidebar.button('Chatbot'):
-        django_app_url = "http://3.96.64.144:8000"
-        # django_app_url = "http://localhost:8000"
+        # django_app_url = "http://3.96.64.144:8000"
+        django_app_url = "http://localhost:8000"
 
         # Get the directory of the current script
         script_dir = os.path.dirname(os.path.abspath(__file__))

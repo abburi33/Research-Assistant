@@ -23,10 +23,27 @@ api_key="Your_api_key"
 # Create your views here.
 
 def streamlit_view(request):
+    """
+    Renders the Streamlit HTML view.
+
+    :param request: Django HTTP request object.
+    :return: Rendered HTML response.
+    """
     return render(request, 'streamlit.html')
 
 # Function to interact with the AI chatbot API
 def askAI(message):
+
+    """
+    Sends user's message to the AI chatbot it and returns the response.
+
+    :param message: User's message.
+    :type message: str
+    :return: Response from the AI chatbot.
+    :rtype: str
+    """
+
+
     # Endpoint URL for the AI chatbot API
     url = "https://chatgpt-gpt4-ai-chatbot.p.rapidapi.com/ask"
 
@@ -56,6 +73,14 @@ def askAI(message):
 
 
 def recognize_speech():
+
+    """
+    Recognizes speech from the user's microphone using Google Speech Recognition.
+
+    :return: Recognized speech as text.
+    :rtype: str
+    """
+
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
@@ -78,6 +103,13 @@ def recognize_speech():
 @login_required
 def chatbot(request):
 
+    """
+    Renders the chatbot interface and handles user interactions.
+
+    :param request: Django HTTP request object.
+    :return: Rendered HTML response.
+    """
+
     if not request.user.is_authenticated:
         return redirect('login')
     # Load previous chat messages of the current user
@@ -99,11 +131,27 @@ def chatbot(request):
 
 @login_required
 def chat_history(request):
+
+    """
+    Renders the chat history page displaying previous conversations.
+
+    :param request: Django HTTP request object.
+    :return: Rendered HTML response.
+    """
+
     chats = Chat.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'chat_history.html', {'chats': chats})
 
 # View function for user login
 def login(request):
+
+    """
+    Handles user login and renders the login page.
+
+    :param request: Django HTTP request object.
+    :return: Rendered HTML response.
+    """
+
     if request.user.is_authenticated:
         return redirect('chatbot')
     
@@ -130,11 +178,27 @@ def login(request):
 # View function for user logout
 @login_required
 def logout_view(request):
+
+    """
+    Logs out the user and redirects to the login page.
+
+    :param request: Django HTTP request object.
+    :return: Redirect to login page.
+    """
+
     auth.logout(request)  
     return redirect('login')  
 
 # View function for user registration
 def register(request):
+
+    """
+    Handles user registration and renders the registration page.
+
+    :param request: Django HTTP request object.
+    :return: Rendered HTML response.
+    """
+
     if request.method == 'POST':
         # Handle POST request for user registration
         username = request.POST['username']

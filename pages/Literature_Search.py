@@ -26,6 +26,25 @@ def search_scholar(query, year_filter=None, author_filter=None, journal_filter=N
 
 st.title('Research Assistant for Literature Search and Management')
 
+if st.sidebar.button('Chatbot'):
+        django_app_url = "http://3.96.64.144:8000"
+        # django_app_url = "http://localhost:8000"
+
+        # Get the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Define the path to the manage.py file in your Django project
+        manage_py_path = os.path.join(script_dir, "django_chatbot", "manage.py")
+        print(manage_py_path)
+        
+        # Define the command to run your Django app
+        django_command = f"python {manage_py_path} runserver"
+        
+        # Run the Django app using subprocess
+        subprocess.Popen(django_command, shell=True)
+        webbrowser.open_new_tab(django_app_url)
+
+
 # Literature Search Filters
 st.sidebar.title('Literature Search')
 query = st.sidebar.text_input('Enter search query:', 'Machine Learning')

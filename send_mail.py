@@ -4,6 +4,21 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email(subject, message, to_email, smtp_server, smtp_port, smtp_user, smtp_password):
+    """
+    Function to send an email using SMTP protocol.
+
+    Args:
+        subject (str): The subject of the email.
+        message (str): The body message of the email.
+        to_email (str): The recipient email address.
+        smtp_server (str): The SMTP server address.
+        smtp_port (int): The SMTP server port.
+        smtp_user (str): The SMTP server username.
+        smtp_password (str): The SMTP server password or app password.
+
+    Returns:
+        None
+    """
     # Create a multipart message
     msg = MIMEMultipart()
     msg['From'] = smtp_user
@@ -28,7 +43,7 @@ def send_email(subject, message, to_email, smtp_server, smtp_port, smtp_user, sm
     except Exception as e:
         print(f"Error sending email: {e}")
 
-# # Example usage:
+# Example usage:
 # subject = "Test Email"
 # message = "This is a test email sent from Python."
 # to_email = "abburisahithi33@gmail.com"

@@ -1,23 +1,27 @@
+import streamlit as st
+import requests
 
-import streamlit as st
-import requests
-API_KEY = "6eeababca09646489b00a8e5c093e65a"  # Replace with your News API key
-import streamlit as st
-import requests
+# Define the API key for News API
+API_KEY = "6eeababca09646489b00a8e5c093e65a"
 
 def main():
+    """
+    Main function to run the Research Assistant Streamlit app.
+    """
     # Header
     st.title('Research Assistant')
-    st.write(f"<span style='font-size:18px;'>'Your one-stop solution for literature search, meeting scheduling, to-do lists, feedback collection, and latest research developments.</span>'", unsafe_allow_html=True)
+    st.write("<span style='font-size:18px;'>'Your one-stop solution for literature search, meeting scheduling, to-do lists, feedback collection, and latest research developments.</span>'", unsafe_allow_html=True)
 
     # Displaying latest research news
     st.header("Latest Research Developments")
     display_latest_research_news()
 
 def display_latest_research_news():
-    # Fetching news data
+    """
+    Function to fetch and display the latest research news.
+    """
+    # Fetching news data from News API
     url = f"https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey={API_KEY}"
-
     response = requests.get(url)
     data = response.json()
 
@@ -37,6 +41,7 @@ def display_latest_research_news():
             st.write(f"[Read more]({url})")
             st.write('---')
     else:
+        # Display a warning if no recent research news found
         st.warning("No recent research news found.")
         print("No articles found")
 

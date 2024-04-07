@@ -2,10 +2,17 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
+# Title
 st.title("Google Sheets as a DataBase")
 
 # Function to create a sample Orders dataframe
 def create_orders_dataframe():
+    """
+    Create a sample Orders dataframe.
+
+    Returns:
+        pandas.DataFrame: Orders dataframe.
+    """
     return pd.DataFrame({
         'OrderID': [101, 102, 103, 104, 105],
         'CustomerName': ['Alice', 'Bob', 'Charlie', 'David', 'Eve'],
@@ -21,14 +28,17 @@ orders = create_orders_dataframe()
 updated_orders = orders.copy()
 updated_orders['TotalPrice'] = updated_orders['TotalPrice'] * 100
 
+# Display Data
 with st.expander("Data ⤵"):
     st.write("Orders")
     st.dataframe(orders)
     st.write("Updated Orders")
     st.dataframe(updated_orders)
 
+# Divider
 st.divider()
 st.write("CRUD Operations:")
+
 # Establishing a Google Sheets connection
 conn = st.connection("gsheets", type=GSheetsConnection)
 

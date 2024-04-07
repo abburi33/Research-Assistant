@@ -7,12 +7,21 @@ r = sr.Recognizer()
 
 # Function to convert text to speech
 def speak_text(command):
+    """
+    Function to convert text to speech and speak it aloud.
+
+    Args:
+    - command (str): The text to be converted to speech.
+    """
     # Initialize the engine
     engine = pyttsx3.init()
     engine.say(command)
     engine.runAndWait()
 
 def app():
+    """
+    Main function to run the Speech to Text and Text to Speech Converter app.
+    """
     st.title("SPEECH TO TEXT AND TEXT TO SPEECH CONVERTER")
 
     # Sidebar for selecting the conversion option
@@ -87,4 +96,6 @@ def app():
         # Button to convert text to speech
         if st.button("Convert to Speech"):
             speak_text(text_input)
-app()
+
+if __name__ == "__main__":
+    app()

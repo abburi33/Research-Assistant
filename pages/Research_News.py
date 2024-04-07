@@ -1,83 +1,68 @@
 import streamlit as st
 import requests
-import os
-import json
 
-# Load API key from environment variable
-API_KEY = os.getenv("NEWS_API_KEY", "6eeababca09646489b00a8e5c093e65a")
-
-def get_latest_research_from_top_journals(query, num_results=5):
-    articles = []
+def search_scopus(query, api_key, subtopic=None, year_filter=None, num_results=5):
+    """
+    Function to search for articles on Scopus based on the provided query and filters.
     
-    # List of top research journals
-    journals = ["Nature", "Science", "The Lancet", "Cell", "Journal of the American Medical Association", 
-                "New England Journal of Medicine", "Proceedings of the National Academy of Sciences", 
-                "PLOS ONE", "Bioinformatics", "Journal of Biological Chemistry"]
+    Args:
+    - query (str): The main search query.
+    - api_key (str): The API key for accessing the Scopus API.
+    - subtopic (str): The subtopic to narrow down the search (optional).
+    - year_filter (str): The year filter to limit search results (optional).
+    - num_results (int): The number of articles to retrieve (default is 5).
     
-    with st.spinner('Fetching latest research from top journals...'):
-        for journal in journals:
-            try:
-                url = f"https://newsapi.org/v2/everything?q={query} {journal}&language=en&sortBy=publishedAt&pageSize={num_results}&apiKey={API_KEY}"
-                response = requests.get(url)
-                data = response.json()
-                
-                if data['status'] == 'ok':
-                    articles.extend(data['articles'])
-                
-            except Exception as e:
-                st.warning(f"Error fetching data from {journal}: {e}")
-                
-        articles = sorted(articles, key=lambda x: x['publishedAt'], reverse=True)[:num_results]
-        
-        if articles:
-            for idx, article in enumerate(articles):
-                st.markdown(f"#### {idx + 1}. [{article['title']}]({article['url']})", unsafe_allow_html=True)
-                st.write(f"**Source:** {article['source']['name']}")
-                st.write(f"**Published Date:** {article['publishedAt']}")
-                st.write(f"**Description:** {article['description']}")
-                
-                # Save button for each article
-                if st.button(f"Save Article {idx + 1}"):
-                    save_article(article, idx)
-                
-                st.write('---')
-            
-        else:
-            st.warning("No articles found.")
+    Returns:
+    - List[dict]: A list of dictionaries containing information about the search results.
+    """
+    url = "https://api.elsevier.com/content/search/scopus"
+    headers = {
+        "X-ELS-APIKey": api_key
+    }
+    params = {
+        "query": query,
+        "count": num_results
+    }
+    if subtopic:
+        params["subtopic"] = subtopic
+    if year_filter:
+        params["date"] = year_filter  # Corrected parameter for year filter
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+    return data.get("search-results", {}).get("entry", [])
 
-def save_article(article, idx):
-    # Create a new directory to save articles if it doesn't exist
-    if not os.path.exists('saved_articles'):
-        os.makedirs('saved_articles')
-    
-    # Create a file with the article title and save the article content
-    try:
-        with open(f"saved_articles/{article['title']}.json", "w", encoding="utf-8") as file:
-            json.dump(article, file, indent=4)
-        
-        st.success(f"Article {idx + 1} saved successfully!")
-        
-        # Provide a download link for the saved article
-        download_link = f"[Download {article['title']}.json](saved_articles/{article['title']}.json)"
-        st.markdown(download_link, unsafe_allow_html=True)
-        
-    except Exception as e:
-        st.warning(f"Error saving article {article['title']}: {e}")
-
-def main():
-    st.title('Latest research from top journals...')
+def app():
+    """
+    Main function to run the Research Assistant for literature search.
+    """
+    st.title('RESEARCH ASSISTANT FOR LITERATE SEARCH')
 
     # Literature Search Filters
-    st.subheader('News Feed')
+    st.sidebar.title('Literature Search')
 
-    with st.form("search_form"):
+    with st.sidebar.form("search_form"):
         query = st.text_input('Enter main search query:', 'Machine Learning')
-        num_articles = st.text_input('Number of news articles:', '5')
+        subtopic = st.text_input('Enter subtopic:', '')
+        year_filter = st.text_input('Filter by Year (YYYY):', '')
+        num_articles = st.text_input('Enter number of articles:', '3')
         
         submitted = st.form_submit_button("Search")
 
     if submitted:
-        get_latest_research_from_top_journals(query, int(num_articles))
+        api_key = "19fb6dbf6b205c5d5c84c1543af87a7f"
+        results = search_scopus(query, api_key, subtopic, year_filter, int(num_articles))
+        
+        for idx, result in enumerate(results, start=1):
+            article_title = result.get('dc:title', '')
+            article_link = result.get('prism:url', '')
+            st.write(f"#### {idx}. [{article_title}]({article_link})")
+            st.write(f"Authors: {', '.join(result.get('dc:creator', ['Unknown']))}")
+            st.write(f"Journal: {result.get('prism:publicationName', '')}")
+            st.write(f"Year: {result.get('prism:coverDate', '')}")
+            abstract = result.get('dc:description', '')
+            st.write(f"Abstract: {abstract}" if abstract else "Abstract: Not available")
+            st.write(f"Citations: {result.get('citedby-count', '')}")
+            st.write('---')
 
 if __name__ == "__main__":
-    main()
+    app()

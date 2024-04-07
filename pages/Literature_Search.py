@@ -6,6 +6,17 @@ import time
 import os
 
 def search_scholar(query, num_results=5, timeout=60):
+    """
+    Function to search for scholarly articles using the given query.
+
+    Args:
+        query (str): The main search query.
+        num_results (int, optional): Number of articles to fetch. Defaults to 5.
+        timeout (int, optional): Timeout duration for the search. Defaults to 60.
+
+    Returns:
+        list: List of dictionaries containing information about the fetched articles.
+    """
     results = []
     progress_bar = st.empty()
     seen_titles = set()
@@ -63,6 +74,9 @@ def search_scholar(query, num_results=5, timeout=60):
     return results[:num_results]  # Return only the required number of articles
 
 def main():
+    """
+    Main function to run the Research Assistant for Literature Search app.
+    """
     st.title('Research Assistant for Literature Search')
     
     if st.button('Chatbot'):
@@ -74,7 +88,6 @@ def main():
         
         # Define the path to the manage.py file in your Django project
         manage_py_path = os.path.join(script_dir, "django_chatbot", "manage.py")
-        print(manage_py_path)
         
         # Define the command to run your Django app
         django_command = f"python {manage_py_path} runserver"

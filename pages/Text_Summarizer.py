@@ -1,18 +1,36 @@
 import streamlit as st
-from txtai.pipeline import Summary, Textractor
+from txtai.pipeline import Summary
 from PyPDF2 import PdfReader
 
 st.set_page_config(layout="wide")
 
 @st.cache_resource
 def text_summary(text, maxlength=None):
-    #create summary instance
+    """
+    Function to summarize text using the txtai library.
+
+    Args:
+    - text (str): The input text to be summarized.
+    - maxlength (int, optional): Maximum length of the summary (default is None).
+
+    Returns:
+    - str: The summarized text.
+    """
+    # Create summary instance
     summary = Summary()
-    text = (text)
-    result = summary(text)
+    result = summary(text, maxlength=maxlength)
     return result
 
 def extract_text_from_pdf(file_path):
+    """
+    Function to extract text from a PDF file.
+
+    Args:
+    - file_path (str): The path to the PDF file.
+
+    Returns:
+    - str: The extracted text from the PDF.
+    """
     # Open the PDF file using PyPDF2
     with open(file_path, "rb") as f:
         reader = PdfReader(f)
@@ -21,6 +39,9 @@ def extract_text_from_pdf(file_path):
     return text
 
 def app():
+    """
+    Main function to run the Text Summarizer app.
+    """
     st.title("TEXT SUMMARIZER")
 
     choice = st.sidebar.selectbox("Select your choice", ["Summarize Text", "Summarize Document"])
@@ -30,7 +51,7 @@ def app():
         input_text = st.text_area("Enter your text here")
         if input_text is not None:
             if st.button("Summarize Text"):
-                col1, col2 = st.columns([1,1])
+                col1, col2 = st.columns([1, 1])
                 with col1:
                     st.markdown("*Your Input Text*")
                     st.info(input_text)
@@ -46,7 +67,7 @@ def app():
             if st.button("Summarize Document"):
                 with open("doc_file.pdf", "wb") as f:
                     f.write(input_file.getbuffer())
-                col1, col2 = st.columns([1,1])
+                col1, col2 = st.columns([1, 1])
                 with col1:
                     st.info("File uploaded successfully")
                     extracted_text = extract_text_from_pdf("doc_file.pdf")
@@ -54,7 +75,8 @@ def app():
                     st.info(extracted_text)
                 with col2:
                     st.markdown("*Summary Result*")
-                    text = extract_text_from_pdf("doc_file.pdf")
-                    doc_summary = text_summary(text)
+                    doc_summary = text_summary(extracted_text)
                     st.success(doc_summary)
-app()
+
+if __name__ == "__main__":
+    app()
